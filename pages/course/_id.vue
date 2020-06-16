@@ -5,6 +5,8 @@
       <section class="path-wrap txtOf hLh30">
         <a href="#" title class="c-999 fsize14">首页</a>
         \
+        <a href="/course" title class="c-999 fsize14">课程列表</a>
+        \
         <a href="#" title class="c-999 fsize14">{{courseWebVo.subjectLevelOne}}</a>
         \
         <span class="c-333 fsize14">{{courseWebVo.subjectLevelTwo}}</span>
@@ -106,10 +108,13 @@
 
                             <ol class="lh-menu-ol" style="display: block;">
                               <li class="lh-menu-second ml30" v-for="video in chapter.children" :key="video.id">
-                                <a :href="'/player/'+video.videoSourceId" target="_blank">
-                                  <span class="fr">
-                                    <i class="free-icon vam mr10">免费试听</i>
-                                  </span>
+                                <a>
+                                  <span v-if="video.isFree === 1" class="fr">
+                                    <a :href="'/player/'+video.videoSourceId" target="_blank">
+                                      <i class="free-icon vam mr10">免费试听</i>
+                                    </a>
+
+                                    </span>
                                   <em class="lh-menu-i-2 icon16 mr5">&nbsp;</em>{{video.title}}
                                 </a>
                               </li>
@@ -137,12 +142,12 @@
                 <ul style="height: auto;">
                   <li>
                     <div class="u-face">
-                      <a href="#">
+                      <a :href="'/teacher/'+courseWebVo.teacherId" target="_blank">
                         <img :src="courseWebVo.avatar" width="50" height="50" alt>
                       </a>
                     </div>
                     <section class="hLh30 txtOf">
-                      <a class="c-333 fsize16 fl" href="#">{{courseWebVo.teacherName}}</a>
+                      <a class="c-333 fsize16 fl" :href="'/teacher/'+courseWebVo.teacherId" target="_blank">{{courseWebVo.teacherName}}</a>
                     </section>
                     <section class="hLh20 txtOf">
                       <span class="c-999">{{courseWebVo.intro}}</span>
