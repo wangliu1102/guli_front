@@ -104,7 +104,7 @@
         //异步调用，调用一次
         //params: 相当于之前 this.$route.params.id  等价  params.id
         asyncData({params, error}) {
-            return teacherApi.getTeacherList(1, 2).then(response => {
+            return teacherApi.getTeacherList(1, 4).then(response => {
                 //this.data = response.data.data
                 return {data: response.data.data}
             })
@@ -114,7 +114,7 @@
             //参数是页码数
             gotoPage(page) {
                 console.log(page)
-                teacherApi.getTeacherList(page, 2)
+                teacherApi.getTeacherList(page, 4)
                     .then(response => {
                         this.data = response.data.data
                     })
