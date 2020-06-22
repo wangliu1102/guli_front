@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
+import {MessageBox, Message} from 'element-ui'
 import cookie from 'js-cookie'
 
 // 创建axios实例
@@ -25,16 +25,24 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     //debugger
-    if (response.data.code == 28004) {
+    if (response.data.code === 28004) {
       console.log("response.data.resultCode是28004")
       // 返回 错误代码-1 清除ticket信息并跳转到登录页面
       //debugger
-      window.location.href="/login"
+      Message({
+        message: response.data.message || 'error',
+        type: 'error',
+        duration: 3 * 1000,
+        onClose:()=>{
+          window.location.href = "/login"
+        }
+      })
+
       return
-    }else{
+    } else {
       if (response.data.code !== 20000) {
         //25000：订单支付中，不做任何提示
-        if(response.data.code != 25000) {
+        if (response.data.code !== 25000) {
           Message({
             message: response.data.message || 'error',
             type: 'error',
