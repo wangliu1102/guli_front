@@ -14,7 +14,7 @@
       <div>
         <article class="c-v-pic-wrap" style="height: 357px;">
           <section class="p-h-video-box" id="videoPlay">
-            <img :src="courseWebVo.cover" :alt="courseWebVo.title" class="dis c-v-pic">
+            <img height="357px" :src="courseWebVo.cover" :alt="courseWebVo.title" class="dis c-v-pic">
           </section>
         </article>
         <aside class="c-attr-wrap">
@@ -35,13 +35,16 @@
                 <a class="c-fff vam" title="收藏" href="#">收藏</a>
               </span>
             </section>
-            <section class="c-attr-mt">
+            <section v-if="isBuy || Number(courseWebVo.price) === 0" class="c-attr-mt">
               <a href="#" title="立即观看" class="comm-btn c-btn-3">立即观看</a>
+            </section>
+            <section v-else class="c-attr-mt">
+              <a @click="createOrders()" href="#" title="立即购买" class="comm-btn c-btn-3">立即购买</a>
             </section>
           </section>
         </aside>
         <aside class="thr-attr-box">
-          <ol class="thr-attr-ol clearfix">
+          <ol class="thr-attr-ol">
             <li>
               <p>&nbsp;</p>
               <aside>
@@ -178,7 +181,8 @@
                       </fieldset>
                       <p class="of mt5 tar pl10 pr10">
                         <span class="fl "><tt class="c-red commentContentmeg" style="display: none;"></tt></span>
-                        <input type="button" @click="addComment()" value="回复" class="lh-reply-btn" style="cursor: pointer">
+                        <input type="button" @click="addComment()" value="回复" class="lh-reply-btn"
+                               style="cursor: pointer">
                       </p>
                     </section>
                   </div>
@@ -262,18 +266,12 @@
 <script>
     import courseApi from '@/api/course'
     import comment from '@/api/comment'
+    import ordersApi from '@/api/orders'
 
     export default {
         //和页面异步开始的
         asyncData({params, error}) {
-            return courseApi.getCourseInfo(params.id)
-                .then(response => {
-                    return {
-                        courseId: params.id,
-                        courseWebVo: response.data.data.courseWebVo,
-                        chapterVideoList: response.data.data.chapterVideoList
-                    }
-                })
+            return {courseId: params.id}
         },
         data() {
             return {
@@ -284,12 +282,25 @@
                     content: '',
                     courseId: ''
                 },
+                courseWebVo: {},
+                chapterVideoList: [],
+                isBuy: false,
             }
         },
         created() {
+            this.initCourseInfo()
             this.initComment()
         },
         methods: {
+            //查询课程详情信息
+            initCourseInfo() {
+                courseApi.getCourseInfo(this.courseId)
+                    .then(response => {
+                        this.courseWebVo = response.data.data.courseWebVo,
+                            this.chapterVideoList = response.data.data.chapterVideoList,
+                            this.isBuy = response.data.data.isBuy
+                    })
+            },
             initComment() {
                 comment.getCommentPageByCourseId(this.page, this.limit, this.courseId).then(response => {
                     this.data = response.data.data
@@ -310,6 +321,15 @@
                 comment.getCommentPageByCourseId(page, this.limit, this.courseId).then(response => {
                     this.data = response.data.data
                 })
+            },
+            //生成订单
+            createOrders() {
+                ordersApi.createOrders(this.courseId)
+                    .then(response => {
+                        //获取返回订单号
+                        //生成订单之后，跳转订单显示页面
+                        this.$router.push({path: '/orders/' + response.data.data.orderId})
+                    })
             }
         }
     };
